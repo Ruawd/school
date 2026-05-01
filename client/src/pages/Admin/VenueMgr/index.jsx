@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import {
-  Alert,
   Button,
   Card,
   Col,
@@ -91,11 +90,6 @@ const VenueMgr = () => {
     };
   }, [watchedMapX, watchedMapY, pickerLocation]);
 
-  const hasLegacyCoordinate = useMemo(() => {
-    if (watchedMapX === undefined || watchedMapX === null || watchedMapX === '') return false;
-    if (watchedMapY === undefined || watchedMapY === null || watchedMapY === '') return false;
-    return !getVenueCoordinate({ map_x: watchedMapX, map_y: watchedMapY });
-  }, [watchedMapX, watchedMapY]);
 
   const loadVenueTypes = async () => {
     try {
@@ -493,20 +487,6 @@ const VenueMgr = () => {
           </Row>
 
           <Form.Item label='地图位置' required>
-            <Alert
-              type='info'
-              showIcon
-              style={{ marginBottom: 12 }}
-              title='可直接在地图中点击选点、拖拽红色标记微调，也可以先搜索地点或使用当前定位，再保存到场地坐标。'
-            />
-            {hasLegacyCoordinate ? (
-              <Alert
-                type='warning'
-                showIcon
-                style={{ marginBottom: 12 }}
-                title='当前场地存在旧坐标格式，建议重新在地图上选择一次位置并保存，以确保移动端地图展示正常。'
-              />
-            ) : null}
             <div className='admin-venue-map-picker'>
               <VenueMapBoard
                 venues={venues}
@@ -533,12 +513,12 @@ const VenueMgr = () => {
           <Row gutter={12}>
             <Col xs={24} md={12}>
               <Form.Item name='map_x' label='经度' rules={[{ validator: validateLongitude }]}>
-                <InputNumber precision={6} style={{ width: '100%' }} placeholder='地图自动回填经度' />
+                <InputNumber precision={6} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col xs={24} md={12}>
               <Form.Item name='map_y' label='纬度' rules={[{ validator: validateLatitude }]}>
-                <InputNumber precision={6} style={{ width: '100%' }} placeholder='地图自动回填纬度' />
+                <InputNumber precision={6} style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
@@ -598,7 +578,6 @@ const VenueMgr = () => {
             <div style={{ display: 'inline-flex', padding: 16, background: '#fff', borderRadius: 12, boxShadow: 'inset 0 0 12px rgba(0,0,0,0.06)' }}>
               <QRCodeCanvas id='venue-qr-canvas' value={getVenueCheckinValue(qrVenue)} size={220} includeMargin />
             </div>
-            <div style={{ marginTop: 16, color: '#999', fontSize: 13 }}>该签到码使用场地专属随机令牌生成，用户扫描后可完成场地签到，管理员现场核验时也可直接扫描该码，系统会自动匹配当前有效预约。</div>
             <Space style={{ marginTop: 16 }} wrap>
               <Button onClick={copyVenueCode}>复制签到码内容</Button>
               <Button type='primary' onClick={downloadQrCode}>下载二维码</Button>
