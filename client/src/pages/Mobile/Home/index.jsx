@@ -5,7 +5,7 @@ import { DownOutline, EnvironmentOutline } from 'antd-mobile-icons';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../../services/request';
 import { resolveImageUrl } from '../../../utils/image';
-import { splitEquipments } from '../../../utils/amap';
+import { getVenueStatusMeta, splitEquipments } from '../../../utils/amap';
 
 const PLACEHOLDER_IMG = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjgwIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiNlZWUiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIxMiIgZmlsbD0iIjk5OSIgZHk9Ii4zZW0iIHRleHQtYW5jaG9yPSJtaWRkbGUiPuaiguaXoOWbvuefhy88L3RleHQ+PC9zdmc+';
 const createInitialFilters = () => ({
@@ -54,7 +54,7 @@ const MobileHome = ({ active = true } = {}) => {
             try {
                 const [typeRes, venueRes] = await Promise.all([
                     axios.get('/venue-types'),
-                    axios.get('/venues?status=1'),
+                    axios.get('/venues'),
                 ]);
 
                 if (typeRes.code === 200) {
@@ -62,7 +62,7 @@ const MobileHome = ({ active = true } = {}) => {
                 }
 
                 if (venueRes.code === 200) {
-                    const list = venueRes.data || [];
+                    const list = (venueRes.data || []).filter((item) => Number(item.status) !== 0);
                     setVenues(list);
                     const tags = new Set();
                     list.forEach((item) => splitEquipments(item.equipment).forEach((tag) => tags.add(tag)));
@@ -434,7 +434,18 @@ const MobileHome = ({ active = true } = {}) => {
                                     <EnvironmentOutline /> {venue.capacity}人 | {getTypeName(venue.type_id)}
                                 </div>
                                 <div style={{ marginTop: 8 }}>
-                                    <Tag color='success'>开放中</Tag>
+                                    {(() => {
+                                        const statusMeta = getVenueStatusMeta(venue.status);
+                                        return (
+                                            <Tag style={{
+                                                '--text-color': statusMeta.color,
+                                                '--border-color': statusMeta.color,
+                                                '--background-color': statusMeta.lightColor,
+                                            }}>
+                                                {statusMeta.label}
+                                            </Tag>
+                                        );
+                                    })()}
                                     <span style={{ fontSize: 12, color: '#999', marginLeft: 8 }}>
                                         {venue.open_start?.slice(0, 5)} - {venue.open_end?.slice(0, 5)}
                                     </span>
