@@ -54,7 +54,7 @@ const buildSlots = (venue, schedule, selectedDate) => {
     const start = openStart + index * SLOT_MINUTES;
     const end = Math.min(start + SLOT_MINUTES, openEnd);
     const reservation = schedule.find((item) => overlapsWithReservation(start, end, item));
-    const isPast = isToday && end <= nowMinutes;
+    const isPast = isToday && start <= nowMinutes;
     const occupied = Boolean(reservation);
     let state = 'free';
     if (occupied) state = 'occupied';
@@ -150,6 +150,12 @@ const getSelectedWindow = (slots, selection) => {
   };
 };
 
+const isWindowStartAfterNow = (selectedDate, selectedWindow) => {
+  if (!selectedWindow) return false;
+  const dateText = dayjs(selectedDate).format('YYYY-MM-DD');
+  return dayjs(`${dateText} ${selectedWindow.startLabel}`).isAfter(dayjs());
+};
+
 const getEndCandidateIndexes = (slots, startIndex) => {
   if (startIndex === null) return [];
   const startSlot = slots[startIndex];
@@ -190,6 +196,12 @@ const MobileBooking = () => {
   const [endPickerVisible, setEndPickerVisible] = useState(false);
   const [startPickerValue, setStartPickerValue] = useState([]);
   const [endPickerValue, setEndPickerValue] = useState([]);
+  const [nowTick, setNowTick] = useState(() => Date.now());
+
+  useEffect(() => {
+    const timer = window.setInterval(() => setNowTick(Date.now()), 30000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const fetchVenue = async () => {
@@ -240,7 +252,7 @@ const MobileBooking = () => {
     setEndPickerValue([]);
   }, [id, selectedDate]);
 
-  const slots = useMemo(() => buildSlots(venue, schedule, selectedDate), [venue, schedule, selectedDate]);
+  const slots = useMemo(() => buildSlots(venue, schedule, selectedDate), [venue, schedule, selectedDate, nowTick]);
   const freeBlocks = useMemo(() => buildFreeBlocks(slots), [slots]);
   const selectionStage = useMemo(() => getSelectionStage(selection), [selection]);
   const previewSlots = useMemo(() => getSelectedSlots(slots, selection), [slots, selection]);
@@ -345,6 +357,12 @@ const MobileBooking = () => {
       return;
     }
 
+    if (!isWindowStartAfterNow(selectedDate, selectedWindow)) {
+      Toast.show({ content: '预约开始时间已过，请重新选择' });
+      setSelection(EMPTY_SELECTION);
+      return;
+    }
+
     setValidatingSelection(true);
     try {
       const latestSchedule = await fetchSchedule(selectedDate);
@@ -366,6 +384,12 @@ const MobileBooking = () => {
   const handleSubmit = async () => {
     if (!selectedWindow || !strictSelectionValid) {
       Toast.show({ content: '请选择有效的预约时段' });
+      return;
+    }
+    if (!isWindowStartAfterNow(selectedDate, selectedWindow)) {
+      Toast.show({ content: '预约开始时间已过，请重新选择' });
+      setPopupVisible(false);
+      setSelection(EMPTY_SELECTION);
       return;
     }
     if (!purpose.trim()) {
