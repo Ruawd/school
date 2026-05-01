@@ -404,11 +404,16 @@ const Checkin = () => {
             <Dialog
                 visible={scanDialogVisible}
                 content={scanUser ? `用户 ${scanUser.real_name || scanUser.username || scanUser.id} 签到成功` : '签到成功'}
-                confirmText='继续扫码'
-                onConfirm={() => {
+                closeOnMaskClick
+                closeOnAction
+                actions={[
+                    { key: 'close', text: '关闭' },
+                    { key: 'continue', text: '继续扫码', bold: true },
+                ]}
+                onAction={(action) => {
                     setScanDialogVisible(false);
                     setScanUser(null);
-                    if (isAdmin && !scanning) startScan();
+                    if (action.key === 'continue' && isAdmin && !scanning) startScan();
                 }}
                 onClose={() => {
                     setScanDialogVisible(false);
