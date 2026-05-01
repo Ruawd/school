@@ -1,0 +1,67 @@
+﻿# 默认忽略全部，只放程序代码
+*
+
+# Git 配置
+!.gitignore
+!README.md
+
+# 启停脚本
+!dev.bat
+!stop.bat
+
+# 前端代码
+!client/
+client/*
+!client/.gitignore
+!client/.env.example
+!client/package.json
+!client/package-lock.json
+!client/index.html
+!client/eslint.config.js
+!client/vite.config.js
+!client/vite.config.ts
+!client/README.md
+!client/public/
+!client/public/**
+!client/src/
+!client/src/**
+
+# 后端代码
+!server/
+server/*
+!server/.env.example
+!server/app.js
+!server/package.json
+!server/package-lock.json
+!server/config/
+!server/config/**
+!server/controllers/
+!server/controllers/**
+!server/middlewares/
+!server/middlewares/**
+!server/models/
+!server/models/**
+!server/routes/
+!server/routes/**
+!server/scripts/
+!server/scripts/**
+!server/services/
+!server/services/**
+!server/utils/
+!server/utils/**
+
+# 明确忽略敏感和构建/运行产物
+**/.env
+**/.env.local
+**/.env.*.local
+**/node_modules/
+**/dist/
+**/build/
+**/coverage/
+**/uploads/
+**/*.log
+**/*-start*.log
+**/thesis-server*.log
+**/smoke*.log
+.DS_Store
+Thumbs.db

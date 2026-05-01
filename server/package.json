@@ -1,0 +1,41 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "env:check": "node scripts/validate_env.js",
+    "db:check": "node scripts/check_db.js",
+    "db:init": "node scripts/init_db.js",
+    "start": "node app.js",
+    "test": "node scripts/validate_env.js",
+    "test:smoke": "node scripts/smoke_test.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@ant-design/icons": "^6.1.0",
+    "antd": "^6.2.2",
+    "antd-mobile": "^5.42.3",
+    "axios": "^1.13.4",
+    "bcryptjs": "^3.0.3",
+    "classnames": "^2.5.1",
+    "cors": "^2.8.6",
+    "dayjs": "^1.11.19",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "express-validator": "^7.3.1",
+    "helmet": "^8.1.0",
+    "icons": "^1.0.0",
+    "jsonwebtoken": "^9.0.3",
+    "morgan": "^1.10.1",
+    "multer": "^2.0.2",
+    "mysql2": "^3.16.2",
+    "node-schedule": "^2.1.1",
+    "react-router-dom": "^7.13.0",
+    "sequelize": "^6.37.7",
+    "uuid": "^13.0.0"
+  }
+}
