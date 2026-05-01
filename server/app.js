@@ -24,6 +24,21 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/v1', require('./routes'));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// In production, let the Node service serve the built front-end files as well.
+// This keeps deployment simple: Nginx only needs to proxy the whole domain to this service.
+const clientDistPath = path.resolve(__dirname, '../client/dist');
+const clientIndexPath = path.join(clientDistPath, 'index.html');
+
+if (require('fs').existsSync(clientIndexPath)) {
+  app.use(express.static(clientDistPath));
+  app.use((req, res, next) => {
+    if (req.method !== 'GET') return next();
+    if (req.path.startsWith('/api/') || req.path.startsWith('/uploads/')) return next();
+    return res.sendFile(clientIndexPath);
+  });
+}
+
 app.use(require('./middlewares/error'));
 
 const PORT = Number(process.env.PORT || 3788);
