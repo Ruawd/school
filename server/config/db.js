@@ -1,6 +1,8 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config({ quiet: true });
 
+process.env.TZ = process.env.APP_TIMEZONE || 'Asia/Shanghai';
+
 const sequelize = new Sequelize(
     process.env.DB_NAME,
     process.env.DB_USER,
