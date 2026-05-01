@@ -78,10 +78,6 @@ const Login = () => {
                       登录
                     </Button>
                   </Form.Item>
-
-                  <div style={{ textAlign: 'center', color: '#666' }}>
-                    默认管理员：admin / 123456（系统启动后自动初始化）
-                  </div>
                 </Form>
               ),
             },
