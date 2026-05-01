@@ -1,9 +1,12 @@
-﻿import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { TabBar } from 'antd-mobile';
 import { AppOutline, UnorderedListOutline, UserOutline, EnvironmentOutline } from 'antd-mobile-icons';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import useNotificationStream from '../../hooks/useNotificationStream';
 import { readStoredUser, resolveNotificationTarget } from '../../utils/notificationRouting';
+import MobileHome from './Home';
+import MobileHistory from './History';
+import Profile from './Profile';
 
 const MobileLayout = () => {
     const navigate = useNavigate();
@@ -55,6 +58,20 @@ const MobileLayout = () => {
         },
     ]), [notificationStream.unreadCount]);
 
+    const keepAlivePages = useMemo(() => ({
+        '/home': MobileHome,
+        '/history': MobileHistory,
+        '/profile': Profile,
+    }), []);
+    const isBottomTab = tabs.some((item) => item.key === pathname);
+    const isKeepAlivePage = Boolean(keepAlivePages[pathname]);
+    const [visitedPages, setVisitedPages] = useState(() => (isKeepAlivePage ? [pathname] : []));
+
+    useEffect(() => {
+        if (!isKeepAlivePage) return;
+        setVisitedPages((prev) => (prev.includes(pathname) ? prev : [...prev, pathname]));
+    }, [isKeepAlivePage, pathname]);
+
     const setRouteActive = (value) => {
         navigate(value);
     };
@@ -62,11 +79,21 @@ const MobileLayout = () => {
     return (
         <div className='mobile-layout'>
             <div className='mobile-layout__content'>
-                <Outlet context={notificationStream} />
+                {visitedPages.map((pageKey) => {
+                    const Page = keepAlivePages[pageKey];
+                    if (!Page) return null;
+                    const active = pathname === pageKey;
+                    return (
+                        <div key={pageKey} style={{ display: active ? 'block' : 'none', height: '100%' }}>
+                            <Page active={active} notificationStream={notificationStream} />
+                        </div>
+                    );
+                })}
+                {!isKeepAlivePage ? <Outlet context={notificationStream} /> : null}
             </div>
             <div
                 className='mobile-layout__tabbar'
-                style={{ display: tabs.find(t => t.key === pathname) ? 'block' : 'none' }}
+                style={{ display: isBottomTab ? 'block' : 'none' }}
             >
                 <TabBar activeKey={pathname} onChange={value => setRouteActive(value)}>
                     {tabs.map(item => (

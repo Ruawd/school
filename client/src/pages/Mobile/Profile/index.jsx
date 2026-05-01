@@ -5,19 +5,26 @@ import { useNavigate, useOutletContext } from 'react-router-dom';
 import axios from '../../../services/request';
 import { getRoleLabel } from '../../../utils/user';
 
-const Profile = () => {
-  const [user, setUser] = useState({});
+const Profile = ({ active: pageActive = true, notificationStream: injectedNotificationStream } = {}) => {
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('user') || '{}');
+    } catch {
+      return {};
+    }
+  });
   const navigate = useNavigate();
-  const notificationStream = useOutletContext() || {};
+  const outletNotificationStream = useOutletContext() || {};
+  const notificationStream = injectedNotificationStream || outletNotificationStream;
   const unreadCount = notificationStream.unreadCount || 0;
 
   useEffect(() => {
-    let active = true;
+    let alive = true;
 
     const loadProfile = async () => {
       try {
         const userRes = await axios.get('/auth/me');
-        if (!active || userRes.code !== 200) return;
+        if (!alive || userRes.code !== 200) return;
         setUser(userRes.data || {});
         localStorage.setItem('user', JSON.stringify(userRes.data || {}));
       } catch (err) {
@@ -25,11 +32,11 @@ const Profile = () => {
       }
     };
 
-    void loadProfile();
+    if (pageActive) void loadProfile();
     return () => {
-      active = false;
+      alive = false;
     };
-  }, []);
+  }, [pageActive]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');

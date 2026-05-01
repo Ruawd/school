@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 
 const CHECKIN_WINDOW_MINUTES = 15;
 
-const History = () => {
+const History = ({ active = true } = {}) => {
     const [list, setList] = useState([]);
     const [queueList, setQueueList] = useState([]);
     const [keyword, setKeyword] = useState('');
@@ -34,8 +34,8 @@ const History = () => {
     };
 
     useEffect(() => {
-        void loadData();
-    }, []);
+        if (active) void loadData();
+    }, [active]);
 
     const handleCancel = (id) => {
         const confirmed = window.confirm('确定要取消这个预约吗？');

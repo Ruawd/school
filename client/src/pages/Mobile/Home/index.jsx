@@ -37,7 +37,7 @@ const previewEquipmentChipStyle = {
     whiteSpace: 'nowrap',
 };
 
-const MobileHome = () => {
+const MobileHome = ({ active = true } = {}) => {
     const [venues, setVenues] = useState([]);
     const [venueTypes, setVenueTypes] = useState([]);
     const [equipmentOptions, setEquipmentOptions] = useState([]);
@@ -73,8 +73,8 @@ const MobileHome = () => {
             }
         };
 
-        void fetchData();
-    }, []);
+        if (active) void fetchData();
+    }, [active]);
 
     const getTypeName = (id) => {
         const type = venueTypes.find((item) => Number(item.id) === Number(id));
