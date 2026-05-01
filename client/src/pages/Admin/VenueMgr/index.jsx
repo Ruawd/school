@@ -203,9 +203,7 @@ const VenueMgr = () => {
 
     try {
       const res = await axios.post('/upload', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+        timeout: 60000,
         onUploadProgress: (event) => {
           if (!event.total) return;
           onProgress?.({ percent: Math.round((event.loaded / event.total) * 100) });
