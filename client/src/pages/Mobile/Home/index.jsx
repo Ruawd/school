@@ -50,12 +50,15 @@ const MobileHome = ({ active = true } = {}) => {
     const activeEquipmentHiddenCount = Math.max(0, filters.equipments.length - activeEquipmentPreview.length);
 
     useEffect(() => {
+        let stopped = false;
+
         const fetchData = async () => {
             try {
                 const [typeRes, venueRes] = await Promise.all([
                     axios.get('/venue-types'),
                     axios.get('/venues'),
                 ]);
+                if (stopped) return;
 
                 if (typeRes.code === 200) {
                     setVenueTypes(typeRes.data || []);
@@ -73,7 +76,22 @@ const MobileHome = ({ active = true } = {}) => {
             }
         };
 
-        if (active) void fetchData();
+        if (!active) return () => { stopped = true; };
+
+        void fetchData();
+        const timer = window.setInterval(fetchData, 30000);
+        const handleVisible = () => {
+            if (document.visibilityState === 'visible') void fetchData();
+        };
+        window.addEventListener('focus', fetchData);
+        document.addEventListener('visibilitychange', handleVisible);
+
+        return () => {
+            stopped = true;
+            window.clearInterval(timer);
+            window.removeEventListener('focus', fetchData);
+            document.removeEventListener('visibilitychange', handleVisible);
+        };
     }, [active]);
 
     const getTypeName = (id) => {

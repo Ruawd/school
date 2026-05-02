@@ -14,7 +14,7 @@ const normalizePayload = (payload = {}) => {
     data.type_id = Number(data.type_id);
   }
   if (data.status !== undefined && data.status !== null && data.status !== '') {
-    data.status = Number(data.status);
+    data.status = Number(data.status) === 2 ? 1 : Number(data.status);
   }
   if (data.map_x !== undefined && data.map_x !== null && data.map_x !== '') {
     data.map_x = Number(data.map_x);
@@ -42,6 +42,31 @@ const validateVenue = (payload) => {
   return null;
 };
 
+const buildDisplayVenueStatus = (venue, busyVenueIds) => {
+  if (busyVenueIds.has(Number(venue.id))) return 2;
+  return Number(venue.status) === 0 ? 0 : 1;
+};
+
+const getBusyVenueIds = async (venueIds = null) => {
+  const now = new Date();
+  const where = {
+    status: { [Op.in]: [1, 2] },
+    start_time: { [Op.lte]: now },
+    end_time: { [Op.gt]: now },
+  };
+  if (Array.isArray(venueIds) && venueIds.length) {
+    where.venue_id = { [Op.in]: venueIds };
+  }
+
+  const activeReservations = await Reservation.findAll({
+    where,
+    attributes: ['venue_id'],
+    raw: true,
+  });
+
+  return new Set(activeReservations.map((item) => Number(item.venue_id)));
+};
+
 exports.getVenues = async (req, res) => {
   try {
     const { type, capacity, status } = req.query;
@@ -56,21 +81,10 @@ exports.getVenues = async (req, res) => {
       raw: true,
     });
 
-    const now = new Date();
-    const activeReservations = await Reservation.findAll({
-      where: {
-        status: { [Op.in]: [1, 2] },
-        start_time: { [Op.lte]: now },
-        end_time: { [Op.gte]: now },
-      },
-      attributes: ['venue_id'],
-      raw: true,
-    });
-
-    const busyVenueIds = new Set(activeReservations.map((item) => item.venue_id));
+    const busyVenueIds = await getBusyVenueIds(venues.map((item) => item.id));
     venues = venues.map((item) => ({
       ...item,
-      status: busyVenueIds.has(item.id) ? 2 : item.status,
+      status: buildDisplayVenueStatus(item, busyVenueIds),
     }));
 
     if (status !== undefined && status !== '') {
@@ -92,7 +106,12 @@ exports.getVenueById = async (req, res) => {
     }
 
     await ensureVenueCheckinToken(venue);
-    success(res, sanitizeVenueForRole(venue, req.user));
+    const plain = venue.toJSON();
+    const busyVenueIds = await getBusyVenueIds([plain.id]);
+    success(res, sanitizeVenueForRole({
+      ...plain,
+      status: buildDisplayVenueStatus(plain, busyVenueIds),
+    }, req.user));
   } catch (err) {
     console.error(err);
     error(res, 500, '获取场地详情失败');
