@@ -9,7 +9,7 @@ const Notification = require('../models/Notification');
 const CreditLog = require('../models/CreditLog');
 const Evaluation = require('../models/Evaluation');
 const { sendNotification } = require('../services/notificationService');
-const { verifyTurnstileToken } = require('../services/turnstileService');
+const { verifyGeeTest } = require('../services/geetestService');
 const { success, error } = require('../utils/response');
 
 const signToken = (user) => new Promise((resolve, reject) => {
@@ -84,19 +84,16 @@ const queryCreditLogs = async ({ userId, violationsOnly = false, limit = 100 }) 
 
 exports.register = async (req, res) => {
   try {
-    const { username, password, real_name, turnstileToken } = req.body;
+    const { username, password, real_name, geetestValidate } = req.body;
     if (!username || !password || !real_name) {
       return error(res, 400, '请填写账号、密码和真实姓名');
     }
 
     const requester = parseUserFromAuthHeader(req);
     if (requester?.role !== 9) {
-      const turnstileResult = await verifyTurnstileToken({
-        token: turnstileToken || req.body['cf-turnstile-response'],
-        remoteIp: req.ip,
-      });
-      if (!turnstileResult.success) {
-        return error(res, 400, turnstileResult.message || '人机验证失败，请重新验证');
+      const geetestResult = await verifyGeeTest(geetestValidate);
+      if (!geetestResult.success) {
+        return error(res, 400, geetestResult.message || '人机验证失败，请重新验证');
       }
     }
 

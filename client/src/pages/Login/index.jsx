@@ -1,81 +1,96 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Card, Form, Input, Button, message, Tabs } from 'antd';
 import { UserOutlined, LockOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../services/request';
 import './style.css';
 
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
-let turnstileScriptPromise = null;
+const GEETEST_CAPTCHA_ID = import.meta.env.VITE_GEETEST_CAPTCHA_ID;
+let geetestScriptPromise = null;
 
-const loadTurnstileScript = () => {
-  if (!TURNSTILE_SITE_KEY) return Promise.resolve(null);
-  if (window.turnstile) return Promise.resolve(window.turnstile);
-  if (!turnstileScriptPromise) {
-    turnstileScriptPromise = new Promise((resolve, reject) => {
-      const existed = document.querySelector('script[data-turnstile="true"]');
+const loadGeeTestScript = () => {
+  if (!GEETEST_CAPTCHA_ID) return Promise.resolve(null);
+  if (window.initGeetest4) return Promise.resolve(window.initGeetest4);
+
+  if (!geetestScriptPromise) {
+    geetestScriptPromise = new Promise((resolve, reject) => {
+      const existed = document.querySelector('script[data-geetest="true"]');
       if (existed) {
-        existed.addEventListener('load', () => resolve(window.turnstile), { once: true });
+        existed.addEventListener('load', () => resolve(window.initGeetest4), { once: true });
         existed.addEventListener('error', reject, { once: true });
         return;
       }
 
       const script = document.createElement('script');
-      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.src = 'https://static.geetest.com/v4/gt4.js';
       script.async = true;
-      script.defer = true;
-      script.dataset.turnstile = 'true';
-      script.onload = () => resolve(window.turnstile);
+      script.dataset.geetest = 'true';
+      script.onload = () => resolve(window.initGeetest4);
       script.onerror = reject;
       document.head.appendChild(script);
     });
   }
-  return turnstileScriptPromise;
+
+  return geetestScriptPromise;
 };
 
-const TurnstileBox = ({ onVerify, onExpire }) => {
+const GeeTestBox = ({ onVerify }) => {
   const containerRef = useRef(null);
-  const widgetRef = useRef(null);
+  const captchaRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
-    if (!TURNSTILE_SITE_KEY || !containerRef.current) return undefined;
+    if (!GEETEST_CAPTCHA_ID || !containerRef.current) return undefined;
 
-    loadTurnstileScript()
-      .then((turnstile) => {
-        if (cancelled || !turnstile || !containerRef.current) return;
-        widgetRef.current = turnstile.render(containerRef.current, {
-          sitekey: TURNSTILE_SITE_KEY,
-          callback: onVerify,
-          'expired-callback': onExpire,
-          'timeout-callback': onExpire,
-          'error-callback': onExpire,
+    onVerify(null);
+    containerRef.current.innerHTML = '';
+
+    loadGeeTestScript()
+      .then((initGeetest4) => {
+        if (cancelled || !initGeetest4 || !containerRef.current) return;
+
+        initGeetest4({
+          captchaId: GEETEST_CAPTCHA_ID,
+          product: 'float',
+        }, (captchaObj) => {
+          if (cancelled || !captchaObj || !containerRef.current) return;
+
+          captchaRef.current = captchaObj;
+          captchaObj.appendTo(containerRef.current);
+          captchaObj.onSuccess(() => {
+            onVerify(captchaObj.getValidate());
+          });
+          captchaObj.onError(() => {
+            onVerify(null);
+            message.error('验证码加载失败，请刷新页面重试');
+          });
         });
       })
       .catch(() => {
-        message.error('人机验证加载失败，请刷新页面重试');
+        onVerify(null);
+        message.error('验证码加载失败，请刷新页面重试');
       });
 
     return () => {
       cancelled = true;
-      if (window.turnstile && widgetRef.current) {
-        window.turnstile.remove(widgetRef.current);
+      onVerify(null);
+      if (captchaRef.current && typeof captchaRef.current.destroy === 'function') {
+        captchaRef.current.destroy();
       }
-      widgetRef.current = null;
+      captchaRef.current = null;
     };
-  }, [onExpire, onVerify]);
+  }, [onVerify]);
 
-  if (!TURNSTILE_SITE_KEY) return null;
-  return <div ref={containerRef} style={{ minHeight: 65, display: 'flex', justifyContent: 'center' }} />;
+  if (!GEETEST_CAPTCHA_ID) return null;
+  return <div ref={containerRef} style={{ minHeight: 44 }} />;
 };
 
 const Login = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+  const [geetestValidate, setGeetestValidate] = useState(null);
+  const [geetestResetKey, setGeetestResetKey] = useState(0);
   const navigate = useNavigate();
-  const handleTurnstileExpire = useCallback(() => setTurnstileToken(''), []);
 
   const jumpByRole = () => {
     navigate('/home');
@@ -99,13 +114,13 @@ const Login = () => {
   const handleRegister = async (values) => {
     setRegisterLoading(true);
     try {
-      if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      if (GEETEST_CAPTCHA_ID && !geetestValidate) {
         message.warning('请先完成人机验证');
         return;
       }
       const res = await axios.post('/auth/register', {
         ...values,
-        turnstileToken,
+        geetestValidate,
       });
       if (res.code === 200) {
         message.success('注册成功，已自动登录');
@@ -115,8 +130,8 @@ const Login = () => {
       }
     } finally {
       setRegisterLoading(false);
-      setTurnstileToken('');
-      setTurnstileResetKey((prev) => prev + 1);
+      setGeetestValidate(null);
+      setGeetestResetKey((prev) => prev + 1);
     }
   };
 
@@ -204,12 +219,11 @@ const Login = () => {
                     <Input.Password prefix={<LockOutlined />} placeholder="确认密码" />
                   </Form.Item>
 
-                  {TURNSTILE_SITE_KEY ? (
+                  {GEETEST_CAPTCHA_ID ? (
                     <Form.Item>
-                      <TurnstileBox
-                        key={turnstileResetKey}
-                        onVerify={setTurnstileToken}
-                        onExpire={handleTurnstileExpire}
+                      <GeeTestBox
+                        key={geetestResetKey}
+                        onVerify={setGeetestValidate}
                       />
                     </Form.Item>
                   ) : null}
