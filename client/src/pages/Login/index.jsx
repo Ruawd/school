@@ -1,14 +1,81 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Card, Form, Input, Button, message, Tabs } from 'antd';
 import { UserOutlined, LockOutlined, IdcardOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../services/request';
 import './style.css';
 
+const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY;
+let turnstileScriptPromise = null;
+
+const loadTurnstileScript = () => {
+  if (!TURNSTILE_SITE_KEY) return Promise.resolve(null);
+  if (window.turnstile) return Promise.resolve(window.turnstile);
+  if (!turnstileScriptPromise) {
+    turnstileScriptPromise = new Promise((resolve, reject) => {
+      const existed = document.querySelector('script[data-turnstile="true"]');
+      if (existed) {
+        existed.addEventListener('load', () => resolve(window.turnstile), { once: true });
+        existed.addEventListener('error', reject, { once: true });
+        return;
+      }
+
+      const script = document.createElement('script');
+      script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
+      script.async = true;
+      script.defer = true;
+      script.dataset.turnstile = 'true';
+      script.onload = () => resolve(window.turnstile);
+      script.onerror = reject;
+      document.head.appendChild(script);
+    });
+  }
+  return turnstileScriptPromise;
+};
+
+const TurnstileBox = ({ onVerify, onExpire }) => {
+  const containerRef = useRef(null);
+  const widgetRef = useRef(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!TURNSTILE_SITE_KEY || !containerRef.current) return undefined;
+
+    loadTurnstileScript()
+      .then((turnstile) => {
+        if (cancelled || !turnstile || !containerRef.current) return;
+        widgetRef.current = turnstile.render(containerRef.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          callback: onVerify,
+          'expired-callback': onExpire,
+          'timeout-callback': onExpire,
+          'error-callback': onExpire,
+        });
+      })
+      .catch(() => {
+        message.error('人机验证加载失败，请刷新页面重试');
+      });
+
+    return () => {
+      cancelled = true;
+      if (window.turnstile && widgetRef.current) {
+        window.turnstile.remove(widgetRef.current);
+      }
+      widgetRef.current = null;
+    };
+  }, [onExpire, onVerify]);
+
+  if (!TURNSTILE_SITE_KEY) return null;
+  return <div ref={containerRef} style={{ minHeight: 65, display: 'flex', justifyContent: 'center' }} />;
+};
+
 const Login = () => {
   const [loginLoading, setLoginLoading] = useState(false);
   const [registerLoading, setRegisterLoading] = useState(false);
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const navigate = useNavigate();
+  const handleTurnstileExpire = useCallback(() => setTurnstileToken(''), []);
 
   const jumpByRole = () => {
     navigate('/home');
@@ -32,7 +99,14 @@ const Login = () => {
   const handleRegister = async (values) => {
     setRegisterLoading(true);
     try {
-      const res = await axios.post('/auth/register', values);
+      if (TURNSTILE_SITE_KEY && !turnstileToken) {
+        message.warning('请先完成人机验证');
+        return;
+      }
+      const res = await axios.post('/auth/register', {
+        ...values,
+        turnstileToken,
+      });
       if (res.code === 200) {
         message.success('注册成功，已自动登录');
         localStorage.setItem('token', res.data.token);
@@ -41,6 +115,8 @@ const Login = () => {
       }
     } finally {
       setRegisterLoading(false);
+      setTurnstileToken('');
+      setTurnstileResetKey((prev) => prev + 1);
     }
   };
 
@@ -127,6 +203,16 @@ const Login = () => {
                   >
                     <Input.Password prefix={<LockOutlined />} placeholder="确认密码" />
                   </Form.Item>
+
+                  {TURNSTILE_SITE_KEY ? (
+                    <Form.Item>
+                      <TurnstileBox
+                        key={turnstileResetKey}
+                        onVerify={setTurnstileToken}
+                        onExpire={handleTurnstileExpire}
+                      />
+                    </Form.Item>
+                  ) : null}
 
                   <Form.Item>
                     <Button type="primary" htmlType="submit" loading={registerLoading} block>
