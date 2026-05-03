@@ -129,12 +129,29 @@ const AdminLayout = () => {
         overflow: 'auto',
       }}
       renderItem={(item) => (
-        <List.Item onClick={() => handleRead(item)} style={{ cursor: item.is_read ? 'default' : 'pointer', background: item.is_read ? '#fff' : '#f6ffed' }}>
-          <List.Item.Meta
-            avatar={<Badge status={item.is_read ? 'default' : 'processing'} />}
-            title={item.title}
-            description={<div style={{ whiteSpace: 'normal', color: '#666' }}>{item.content}</div>}
-          />
+        <List.Item
+          onClick={() => handleRead(item)}
+          style={{
+            cursor: item.is_read ? 'default' : 'pointer',
+            background: item.is_read ? '#fff' : '#f6ffed',
+            padding: isMobile ? '16px 20px' : undefined,
+          }}
+        >
+          {isMobile ? (
+            <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+              <Badge status={item.is_read ? 'default' : 'processing'} style={{ marginTop: 8, flex: '0 0 auto' }} />
+              <div style={{ minWidth: 0, flex: 1 }}>
+                <div style={{ fontWeight: 600, fontSize: 16, lineHeight: 1.5, color: '#222' }}>{item.title}</div>
+                <div style={{ marginTop: 6, whiteSpace: 'normal', color: '#666', lineHeight: 1.6 }}>{item.content}</div>
+              </div>
+            </div>
+          ) : (
+            <List.Item.Meta
+              avatar={<Badge status={item.is_read ? 'default' : 'processing'} />}
+              title={item.title}
+              description={<div style={{ whiteSpace: 'normal', color: '#666' }}>{item.content}</div>}
+            />
+          )}
         </List.Item>
       )}
     />
@@ -242,10 +259,14 @@ const AdminLayout = () => {
           <Drawer
             title='站内通知'
             placement='right'
-            width='92vw'
+            width='100vw'
             open={openNote}
             onClose={() => setOpenNote(false)}
-            styles={{ body: { padding: 0 } }}
+            styles={{
+              header: { padding: '16px 20px' },
+              body: { padding: 0 },
+              content: { boxShadow: 'none' },
+            }}
           >
             {notificationContent}
           </Drawer>
