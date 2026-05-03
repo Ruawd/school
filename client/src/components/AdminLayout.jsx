@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Badge, Button, Grid, Layout, List, Menu, Popover, Space, theme } from 'antd';
+import { Badge, Button, Drawer, Grid, Layout, List, Menu, Popover, Space, theme } from 'antd';
 import {
   BellOutlined,
   DashboardOutlined,
@@ -123,7 +123,11 @@ const AdminLayout = () => {
     <List
       dataSource={notifications}
       locale={{ emptyText: '暂无通知' }}
-      style={{ width: 320, maxHeight: 420, overflow: 'auto' }}
+      style={{
+        width: isMobile ? '100%' : 320,
+        maxHeight: isMobile ? 'calc(100vh - 120px)' : 420,
+        overflow: 'auto',
+      }}
       renderItem={(item) => (
         <List.Item onClick={() => handleRead(item)} style={{ cursor: item.is_read ? 'default' : 'pointer', background: item.is_read ? '#fff' : '#f6ffed' }}>
           <List.Item.Meta
@@ -219,14 +223,33 @@ const AdminLayout = () => {
           </div>
 
           <Space align='center'>
-            <Popover content={notificationContent} title='站内通知' trigger='click' open={openNote} onOpenChange={handleOpenChange} placement='bottomRight'>
+            {isMobile ? (
               <Badge count={unreadCount} size='small'>
-                <Button shape='circle' icon={<BellOutlined />} />
+                <Button shape='circle' icon={<BellOutlined />} onClick={() => setOpenNote(true)} />
               </Badge>
-            </Popover>
+            ) : (
+              <Popover content={notificationContent} title='站内通知' trigger='click' open={openNote} onOpenChange={handleOpenChange} placement='bottomRight'>
+                <Badge count={unreadCount} size='small'>
+                  <Button shape='circle' icon={<BellOutlined />} />
+                </Badge>
+              </Popover>
+            )}
             <Button icon={<LogoutOutlined />} onClick={handleLogout}>{isMobile ? '退出' : '退出登录'}</Button>
           </Space>
         </Header>
+
+        {isMobile && (
+          <Drawer
+            title='站内通知'
+            placement='right'
+            width='92vw'
+            open={openNote}
+            onClose={() => setOpenNote(false)}
+            styles={{ body: { padding: 0 } }}
+          >
+            {notificationContent}
+          </Drawer>
+        )}
 
         <Content
           style={{
