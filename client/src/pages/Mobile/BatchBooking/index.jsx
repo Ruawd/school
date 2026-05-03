@@ -17,8 +17,11 @@ import {
   buildCommonFreeBlocks,
   buildOccurrenceDates,
   formatOccurrenceLabel,
+  formatMinutes,
   getBlockHours,
   getBlockValue,
+  parseMinutes,
+  SLOT_MINUTES,
   WEEKDAY_OPTIONS,
 } from '../../../utils/bookingSlots';
 
@@ -70,6 +73,10 @@ const MobileBatchBooking = () => {
   const [weeks, setWeeks] = useState([]);
   const [purpose, setPurpose] = useState('');
   const [selectedBlockValue, setSelectedBlockValue] = useState('');
+  const [selectedStartTime, setSelectedStartTime] = useState('');
+  const [selectedEndTime, setSelectedEndTime] = useState('');
+  const [startTimePickerVisible, setStartTimePickerVisible] = useState(false);
+  const [endTimePickerVisible, setEndTimePickerVisible] = useState(false);
   const [schedulesByDate, setSchedulesByDate] = useState({});
   const [availabilityLoading, setAvailabilityLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -135,6 +142,8 @@ const MobileBatchBooking = () => {
 
   useEffect(() => {
     setSelectedBlockValue('');
+    setSelectedStartTime('');
+    setSelectedEndTime('');
     if (!selectedVenueId || !occurrenceDates.length || startDate > endDate) {
       setSchedulesByDate({});
       return;
@@ -148,10 +157,36 @@ const MobileBatchBooking = () => {
     [selectedVenue, schedulesByDate, occurrenceDates],
   );
 
-  const selectedBlock = useMemo(
-    () => commonBlocks.find((item) => getBlockValue(item) === selectedBlockValue) || null,
-    [commonBlocks, selectedBlockValue],
-  );
+  const timeOptions = useMemo(() => {
+    if (!selectedVenue) return [];
+    const openStart = parseMinutes(selectedVenue.open_start);
+    const openEnd = parseMinutes(selectedVenue.open_end);
+    if (openEnd <= openStart) return [];
+
+    const options = [];
+    for (let minute = openStart; minute <= openEnd; minute += SLOT_MINUTES) {
+      const label = formatMinutes(minute);
+      options.push({ label, value: label });
+    }
+    return options;
+  }, [selectedVenue]);
+
+  const endTimeOptions = useMemo(() => {
+    if (!selectedStartTime) return timeOptions.slice(1);
+    const startMinute = parseMinutes(selectedStartTime);
+    return timeOptions.filter((item) => parseMinutes(item.value) > startMinute);
+  }, [selectedStartTime, timeOptions]);
+
+  const selectedTimeAvailable = useMemo(() => {
+    if (!selectedStartTime || !selectedEndTime) return false;
+    const startMinute = parseMinutes(selectedStartTime);
+    const endMinute = parseMinutes(selectedEndTime);
+    if (endMinute <= startMinute) return false;
+    return commonBlocks.some((block) => (
+      parseMinutes(block.startLabel) <= startMinute
+      && parseMinutes(block.endLabel) >= endMinute
+    ));
+  }, [commonBlocks, selectedStartTime, selectedEndTime]);
 
   const handleSubmit = async () => {
     if (!selectedVenueId) {
@@ -170,8 +205,16 @@ const MobileBatchBooking = () => {
       Toast.show({ content: '当前周期内没有命中所选星期' });
       return;
     }
-    if (!selectedBlock) {
-      Toast.show({ content: '请选择可预约时段' });
+    if (!selectedStartTime || !selectedEndTime) {
+      Toast.show({ content: '请选择具体预约时段' });
+      return;
+    }
+    if (parseMinutes(selectedEndTime) <= parseMinutes(selectedStartTime)) {
+      Toast.show({ content: '结束时间必须晚于开始时间' });
+      return;
+    }
+    if (!selectedTimeAvailable) {
+      Toast.show({ content: '所选时段并非所有日期都空闲，请重新选择' });
       return;
     }
     if (!purpose.trim()) {
@@ -183,11 +226,16 @@ const MobileBatchBooking = () => {
     try {
       const latestSchedules = await refreshAvailability(selectedVenueId, occurrenceDates);
       const { blocks: latestBlocks } = buildCommonFreeBlocks(selectedVenue, latestSchedules, occurrenceDates);
-      const latestBlock = latestBlocks.find((item) => getBlockValue(item) === getBlockValue(selectedBlock));
+      const startMinute = parseMinutes(selectedStartTime);
+      const endMinute = parseMinutes(selectedEndTime);
+      const availableLatest = latestBlocks.some((block) => (
+        parseMinutes(block.startLabel) <= startMinute
+        && parseMinutes(block.endLabel) >= endMinute
+      ));
 
-      if (!latestBlock) {
+      if (!availableLatest) {
         setSelectedBlockValue('');
-        Toast.show({ content: '可预约时段已变化，请重新选择' });
+        Toast.show({ content: '可预约时段已变化，请重新选择具体时间' });
         return;
       }
 
@@ -195,8 +243,8 @@ const MobileBatchBooking = () => {
         venue_id: selectedVenueId,
         start_date: dayjs(startDate).format('YYYY-MM-DD'),
         end_date: dayjs(endDate).format('YYYY-MM-DD'),
-        start_time: latestBlock.startLabel,
-        end_time: latestBlock.endLabel,
+        start_time: selectedStartTime,
+        end_time: selectedEndTime,
         weeks,
         purpose: purpose.trim(),
       });
@@ -285,11 +333,73 @@ const MobileBatchBooking = () => {
             <WeekSelector value={weeks} onChange={setWeeks} />
           </Form.Item>
 
-          <Form.Header>可预约时段</Form.Header>
+          <Form.Header>具体预约时段</Form.Header>
           <div style={{ padding: '0 12px 12px' }}>
             <div style={{ color: '#666', fontSize: 13, lineHeight: 1.6, marginBottom: 12 }}>
-              这里只显示所选日期里每次都能预约的时段。
+              请选择本次批量预约每天使用的具体开始和结束时间。系统会校验该时段在所有命中日期里是否都空闲。
             </div>
+
+            <div style={{ display: 'flex', gap: 12, marginBottom: 12 }}>
+              <Picker
+                columns={[timeOptions.slice(0, -1)]}
+                value={selectedStartTime ? [selectedStartTime] : []}
+                visible={startTimePickerVisible}
+                onClose={() => setStartTimePickerVisible(false)}
+                onConfirm={(value) => {
+                  const next = value?.[0] || '';
+                  setSelectedStartTime(next);
+                  setSelectedBlockValue('');
+                  if (selectedEndTime && parseMinutes(selectedEndTime) <= parseMinutes(next)) {
+                    setSelectedEndTime('');
+                  }
+                }}
+              >
+                {() => (
+                  <div
+                    onClick={timeOptions.length ? () => setStartTimePickerVisible(true) : undefined}
+                    style={{ flex: 1, border: '1px solid #f0f0f0', padding: 10, borderRadius: 8, textAlign: 'center' }}
+                  >
+                    <div style={{ fontSize: 12, color: '#999' }}>开始时间</div>
+                    <div style={{ color: selectedStartTime ? '#333' : '#999' }}>{selectedStartTime || '请选择'}</div>
+                  </div>
+                )}
+              </Picker>
+
+              <Picker
+                columns={[endTimeOptions]}
+                value={selectedEndTime ? [selectedEndTime] : []}
+                visible={endTimePickerVisible}
+                onClose={() => setEndTimePickerVisible(false)}
+                onConfirm={(value) => {
+                  setSelectedEndTime(value?.[0] || '');
+                  setSelectedBlockValue('');
+                }}
+              >
+                {() => (
+                  <div
+                    onClick={selectedStartTime && endTimeOptions.length ? () => setEndTimePickerVisible(true) : undefined}
+                    style={{ flex: 1, border: '1px solid #f0f0f0', padding: 10, borderRadius: 8, textAlign: 'center' }}
+                  >
+                    <div style={{ fontSize: 12, color: '#999' }}>结束时间</div>
+                    <div style={{ color: selectedEndTime ? '#333' : '#999' }}>{selectedEndTime || '请选择'}</div>
+                  </div>
+                )}
+              </Picker>
+            </div>
+
+            {selectedStartTime && selectedEndTime && !availabilityLoading ? (
+              <div
+                style={{
+                  color: selectedTimeAvailable ? '#1677ff' : '#ff4d4f',
+                  fontSize: 13,
+                  marginBottom: 12,
+                }}
+              >
+                {selectedTimeAvailable
+                  ? '所选时段在所有命中日期中均可预约。'
+                  : '所选时段不是所有日期都空闲，请参考下方可用时段调整。'}
+              </div>
+            ) : null}
 
             {startDate > endDate ? (
               <div style={{ color: '#ff4d4f', fontSize: 13 }}>结束日期不能早于开始日期。</div>
@@ -317,13 +427,18 @@ const MobileBatchBooking = () => {
             {!availabilityLoading && selectedVenue && occurrenceDates.length ? (
               commonBlocks.length ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div style={{ color: '#999', fontSize: 13 }}>可用时段参考，点击可快速填入：</div>
                   {commonBlocks.map((block) => {
                     const active = getBlockValue(block) === selectedBlockValue;
                     return (
                       <button
                         key={getBlockValue(block)}
                         type='button'
-                        onClick={() => setSelectedBlockValue(getBlockValue(block))}
+                        onClick={() => {
+                          setSelectedBlockValue(getBlockValue(block));
+                          setSelectedStartTime(block.startLabel);
+                          setSelectedEndTime(block.endLabel);
+                        }}
                         style={{
                           border: active ? '1px solid #1677ff' : '1px solid #f0f0f0',
                           background: active ? '#e6f4ff' : '#fff',

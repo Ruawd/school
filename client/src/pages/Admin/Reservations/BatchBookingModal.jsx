@@ -6,8 +6,11 @@ import {
   buildCommonFreeBlocks,
   buildOccurrenceDates,
   formatOccurrenceLabel,
+  formatMinutes,
   getBlockHours,
   getBlockValue,
+  parseMinutes,
+  SLOT_MINUTES,
   WEEKDAY_OPTIONS,
 } from '../../../utils/bookingSlots';
 
@@ -20,6 +23,8 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
   const [submitting, setSubmitting] = useState(false);
   const [schedulesByDate, setSchedulesByDate] = useState({});
   const [selectedBlockValue, setSelectedBlockValue] = useState('');
+  const [selectedStartTime, setSelectedStartTime] = useState('');
+  const [selectedEndTime, setSelectedEndTime] = useState('');
 
   const venueId = Form.useWatch('venue_id', form);
   const dateRange = Form.useWatch('dateRange', form);
@@ -47,6 +52,8 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
       form.resetFields();
       setSchedulesByDate({});
       setSelectedBlockValue('');
+      setSelectedStartTime('');
+      setSelectedEndTime('');
     }
   }, [visible, form]);
 
@@ -106,6 +113,8 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
     if (!visible) return;
 
     setSelectedBlockValue((prev) => (prev ? '' : prev));
+    setSelectedStartTime('');
+    setSelectedEndTime('');
 
     if (!selectedVenueId || !occurrenceDates.length) {
       setSchedulesByDate((prev) => (Object.keys(prev).length ? {} : prev));
@@ -120,27 +129,66 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
     [selectedVenue, schedulesByDate, occurrenceDates],
   );
 
-  const selectedBlock = useMemo(
-    () => commonBlocks.find((item) => getBlockValue(item) === selectedBlockValue) || null,
-    [commonBlocks, selectedBlockValue],
-  );
+  const timeOptions = useMemo(() => {
+    if (!selectedVenue) return [];
+    const openStart = parseMinutes(selectedVenue.open_start);
+    const openEnd = parseMinutes(selectedVenue.open_end);
+    if (openEnd <= openStart) return [];
+
+    const options = [];
+    for (let minute = openStart; minute <= openEnd; minute += SLOT_MINUTES) {
+      const label = formatMinutes(minute);
+      options.push({ label, value: label });
+    }
+    return options;
+  }, [selectedVenue]);
+
+  const endTimeOptions = useMemo(() => {
+    if (!selectedStartTime) return timeOptions.slice(1);
+    const startMinute = parseMinutes(selectedStartTime);
+    return timeOptions.filter((item) => parseMinutes(item.value) > startMinute);
+  }, [selectedStartTime, timeOptions]);
+
+  const selectedTimeAvailable = useMemo(() => {
+    if (!selectedStartTime || !selectedEndTime) return false;
+    const startMinute = parseMinutes(selectedStartTime);
+    const endMinute = parseMinutes(selectedEndTime);
+    if (endMinute <= startMinute) return false;
+    return commonBlocks.some((block) => (
+      parseMinutes(block.startLabel) <= startMinute
+      && parseMinutes(block.endLabel) >= endMinute
+    ));
+  }, [commonBlocks, selectedStartTime, selectedEndTime]);
 
   const handleOk = async () => {
     try {
       const values = await form.validateFields();
-      if (!selectedBlock) {
-        message.warning('请选择共同空闲时段');
+      if (!selectedStartTime || !selectedEndTime) {
+        message.warning('请选择具体预约时段');
+        return;
+      }
+      if (parseMinutes(selectedEndTime) <= parseMinutes(selectedStartTime)) {
+        message.warning('结束时间必须晚于开始时间');
+        return;
+      }
+      if (!selectedTimeAvailable) {
+        message.warning('所选时段并非所有日期都空闲，请重新选择');
         return;
       }
 
       setSubmitting(true);
       const latestSchedules = await refreshAvailability(values.venue_id, occurrenceDates);
       const { blocks: latestBlocks } = buildCommonFreeBlocks(selectedVenue, latestSchedules, occurrenceDates);
-      const latestBlock = latestBlocks.find((item) => getBlockValue(item) === getBlockValue(selectedBlock));
+      const startMinute = parseMinutes(selectedStartTime);
+      const endMinute = parseMinutes(selectedEndTime);
+      const availableLatest = latestBlocks.some((block) => (
+        parseMinutes(block.startLabel) <= startMinute
+        && parseMinutes(block.endLabel) >= endMinute
+      ));
 
-      if (!latestBlock) {
+      if (!availableLatest) {
         setSelectedBlockValue('');
-        message.warning('共同空闲时段已变化，请重新选择');
+        message.warning('共同空闲时段已变化，请重新选择具体时间');
         return;
       }
 
@@ -148,8 +196,8 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
         venue_id: values.venue_id,
         start_date: values.dateRange[0].format('YYYY-MM-DD'),
         end_date: values.dateRange[1].format('YYYY-MM-DD'),
-        start_time: latestBlock.startLabel,
-        end_time: latestBlock.endLabel,
+        start_time: selectedStartTime,
+        end_time: selectedEndTime,
         weeks: values.weeks,
         purpose: values.purpose.trim(),
       };
@@ -211,13 +259,50 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
           </Checkbox.Group>
         </Form.Item>
 
-        <Form.Item label='共同空闲时段' required>
+        <Form.Item label='具体预约时段' required>
           <Alert
             type='info'
             showIcon
             style={{ marginBottom: 12 }}
-            title='系统会自动计算所选周期内所有命中日期的共同空闲时段，只允许提交所有日期都空闲的时间段。'
+            title='请选择本次批量预约每天使用的具体开始和结束时间，系统会校验该时段在所有命中日期里是否都空闲。'
           />
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 12, marginBottom: 12 }}>
+            <Select
+              placeholder='开始时间'
+              value={selectedStartTime || undefined}
+              options={timeOptions.slice(0, -1)}
+              disabled={!selectedVenue}
+              onChange={(value) => {
+                setSelectedStartTime(value);
+                setSelectedBlockValue('');
+                if (selectedEndTime && parseMinutes(selectedEndTime) <= parseMinutes(value)) {
+                  setSelectedEndTime('');
+                }
+              }}
+            />
+            <Select
+              placeholder='结束时间'
+              value={selectedEndTime || undefined}
+              options={endTimeOptions}
+              disabled={!selectedStartTime}
+              onChange={(value) => {
+                setSelectedEndTime(value);
+                setSelectedBlockValue('');
+              }}
+            />
+          </div>
+
+          {selectedStartTime && selectedEndTime && !availabilityLoading ? (
+            <Alert
+              type={selectedTimeAvailable ? 'success' : 'warning'}
+              showIcon
+              style={{ marginBottom: 12 }}
+              message={selectedTimeAvailable
+                ? '所选时段在所有命中日期中均可预约。'
+                : '所选时段不是所有日期都空闲，请参考下方可用时段调整。'}
+            />
+          ) : null}
 
           {occurrenceDates.length ? (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 12 }}>
@@ -241,13 +326,18 @@ const BatchBookingModal = ({ visible, onClose, onSuccess }) => {
           {!availabilityLoading && selectedVenue && occurrenceDates.length ? (
             commonBlocks.length ? (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div style={{ color: '#999' }}>可用时段参考，点击可快速填入：</div>
                 {commonBlocks.map((block) => {
                   const active = getBlockValue(block) === selectedBlockValue;
                   return (
                     <button
                       key={getBlockValue(block)}
                       type='button'
-                      onClick={() => setSelectedBlockValue(getBlockValue(block))}
+                      onClick={() => {
+                        setSelectedBlockValue(getBlockValue(block));
+                        setSelectedStartTime(block.startLabel);
+                        setSelectedEndTime(block.endLabel);
+                      }}
                       style={{
                         border: active ? '1px solid #1677ff' : '1px solid #d9d9d9',
                         borderRadius: 10,
