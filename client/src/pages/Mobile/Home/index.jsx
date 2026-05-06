@@ -177,7 +177,7 @@ const MobileHome = ({ active = true } = {}) => {
 
     return (
         <>
-            <div style={{ padding: 12 }}>
+            <div className='mobile-home-page__search'>
                 <div
                     style={{
                         background: '#fff',
@@ -422,22 +422,16 @@ const MobileHome = ({ active = true } = {}) => {
                 </div>
             </Popup>
 
-            <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 12, padding: '0 12px 12px' }}>
+            <div className='mobile-home-page__list'>
                 {filteredVenues.map((venue) => (
                     <Card
                         key={venue.id}
+                        className='mobile-home-page__card'
                         onClick={() => navigate(`/venue/${venue.id}`)}
                     >
-                        <div style={{ display: 'flex', gap: 12 }}>
+                        <div className='mobile-home-page__card-body'>
                             <div
-                                style={{
-                                    width: 104,
-                                    height: 80,
-                                    borderRadius: 8,
-                                    overflow: 'hidden',
-                                    background: '#f0f0f0',
-                                    flex: '0 0 auto',
-                                }}
+                                className='mobile-home-page__card-media'
                             >
                                 <img
                                     src={resolveImageUrl(venue.image_url) || PLACEHOLDER_IMG}
