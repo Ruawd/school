@@ -1240,6 +1240,310 @@ body {
     gap: 10px;
 }
 
+@media (min-width: 900px) {
+    .mobile-booking-page {
+        min-height: auto;
+        padding-bottom: 0;
+        background: #fff;
+    }
+
+    .mobile-booking-page > .adm-image {
+        --height: 82px;
+        display: block;
+        width: 100%;
+        height: 82px !important;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .mobile-booking-page__content {
+        padding: 0 0 12px;
+        display: grid;
+        grid-template-columns: minmax(320px, 0.92fr) minmax(420px, 1.22fr) minmax(300px, 0.86fr);
+        grid-template-rows: auto auto 1fr;
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) {
+        grid-column: 1 / -1;
+        grid-row: 1;
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(2) {
+        grid-column: 1;
+        grid-row: 2 / 4;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(3) {
+        grid-column: 2;
+        grid-row: 2;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(4) {
+        grid-column: 2;
+        grid-row: 3;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(5) {
+        grid-column: 3;
+        grid-row: 2 / 4;
+    }
+
+    .mobile-booking-page .adm-card {
+        --adm-card-padding-inline: 14px;
+        --adm-card-header-padding-block: 9px;
+        --adm-card-body-padding-block: 11px;
+        border: 1px solid #edf0f5;
+        border-radius: 10px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .mobile-booking-page .adm-card-header {
+        min-height: 40px;
+    }
+
+    .mobile-booking-page .adm-card-header-title {
+        position: relative;
+        padding-left: 10px;
+        font-size: 15px;
+        color: #0f172a;
+    }
+
+    .mobile-booking-page .adm-card-header-title::before {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        width: 3px;
+        height: 14px;
+        border-radius: 99px;
+        background: #1677ff;
+        content: '';
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) .adm-card-body {
+        display: grid;
+        grid-template-columns: minmax(260px, 0.82fr) minmax(220px, 0.62fr) minmax(320px, 1fr);
+        align-items: center;
+        gap: 14px;
+    }
+
+    .mobile-booking-page__title {
+        font-size: 20px;
+        line-height: 1.25;
+    }
+
+    .mobile-booking-page__title-row {
+        align-items: center;
+        gap: 10px;
+    }
+
+    .mobile-booking-page__meta {
+        margin-top: 6px;
+        gap: 10px;
+        font-size: 12px;
+    }
+
+    .mobile-booking-page__status {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) .mobile-booking-page__tags {
+        margin-top: 0;
+        justify-content: center;
+    }
+
+    .mobile-booking-page__tag {
+        padding: 4px 10px;
+        font-size: 12px;
+        background: #eaf3ff;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) .mobile-booking-page__hint {
+        margin-top: 0;
+        padding: 10px 12px;
+        border-radius: 8px;
+        background: #f1f5f9;
+    }
+
+    .mobile-booking-page__hint,
+    .mobile-booking-page__subhint,
+    .mobile-booking-page__custom-time-tip {
+        font-size: 12px;
+        line-height: 1.5;
+        color: #64748b;
+    }
+
+    .mobile-booking-page__subhint {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #f8fafc;
+    }
+
+    .mobile-booking-page .adm-calendar-header {
+        padding-top: 0;
+    }
+
+    .mobile-booking-page .adm-calendar-header a.adm-calendar-arrow-button {
+        padding: 2px 6px;
+    }
+
+    .mobile-booking-page .adm-calendar-header a.adm-calendar-arrow-button svg {
+        height: 18px;
+    }
+
+    .mobile-booking-page .adm-calendar-header .adm-calendar-title {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    .mobile-booking-page .adm-calendar-mark {
+        height: 28px;
+        padding: 0 2px;
+        font-size: 11px;
+    }
+
+    .mobile-booking-page .adm-calendar-cells {
+        padding: 4px 2px 0;
+    }
+
+    .mobile-booking-page .adm-calendar-cell {
+        height: 34px;
+        margin-bottom: 2px;
+        padding: 1px;
+        border-radius: 6px;
+        justify-content: center;
+    }
+
+    .mobile-booking-page .adm-calendar-cell .adm-calendar-cell-top {
+        font-size: 13px;
+    }
+
+    .mobile-booking-page .adm-calendar-cell .adm-calendar-cell-bottom {
+        display: none;
+    }
+
+    .mobile-booking-page__block-list {
+        max-height: 144px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    .mobile-booking-page__block-item {
+        min-height: 44px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 13px;
+        background: #f8fbff;
+    }
+
+    .mobile-booking-page__block-item .time {
+        font-size: 14px;
+    }
+
+    .mobile-booking-page__block-item .desc {
+        font-size: 11px;
+    }
+
+    .mobile-booking-page__time-picker-grid {
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .mobile-booking-page__time-picker-label {
+        margin-bottom: 6px;
+        font-size: 12px;
+    }
+
+    .mobile-booking-page__time-picker-trigger {
+        min-height: 44px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        background: #fff;
+    }
+
+    .mobile-booking-page__time-picker-trigger span {
+        font-size: 14px;
+    }
+
+    .mobile-booking-page__time-picker-trigger strong {
+        margin-top: 2px;
+        font-size: 11px;
+    }
+
+    .mobile-booking-page__selection-summary {
+        margin-top: 10px;
+        padding: 8px 10px;
+        border-radius: 8px;
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+    .mobile-booking-page__occupy-list {
+        max-height: 338px;
+        overflow-y: auto;
+        padding-right: 2px;
+    }
+
+    .mobile-booking-page__occupy-item {
+        padding: 9px 10px;
+        border-radius: 10px;
+        font-size: 13px;
+    }
+
+    .mobile-booking-page__empty-text,
+    .mobile-booking-page__loading-inline {
+        padding: 8px 0;
+    }
+
+    .mobile-booking-page__footer {
+        position: static;
+        left: auto;
+        right: auto;
+        bottom: auto;
+        z-index: auto;
+        margin: 0;
+        padding: 11px 14px;
+        border: 1px solid #edf0f5;
+        border-radius: 10px;
+        background: #fff;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.04);
+    }
+
+    .mobile-booking-page__footer .adm-button.adm-button-large {
+        padding-top: 8px;
+        padding-bottom: 8px;
+        font-size: 14px;
+    }
+}
+
+@media (min-width: 900px) and (max-width: 1180px) {
+    .mobile-booking-page__content {
+        grid-template-columns: minmax(310px, 0.9fr) minmax(360px, 1.1fr);
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(5) {
+        grid-column: 1 / 3;
+        grid-row: 4;
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) .adm-card-body {
+        grid-template-columns: minmax(260px, 1fr) minmax(220px, 0.7fr);
+    }
+
+    .mobile-booking-page__content > .adm-card:nth-child(1) .mobile-booking-page__hint {
+        grid-column: 1 / 3;
+    }
+
+    .mobile-booking-page__occupy-list {
+        max-height: 120px;
+    }
+}
+
 /* Admin venue map */
 .admin-venue-map-picker {
     border-radius: 16px;
