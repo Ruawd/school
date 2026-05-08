@@ -147,7 +147,7 @@ body {
     }
 
     .user-layout__brand-title {
-        font-size: 26px;
+        font-size: 29px;
         font-weight: 700;
         color: #fff;
         line-height: 1.1;
@@ -156,11 +156,11 @@ body {
 
     .user-layout__brand-subtitle {
         color: rgba(255, 255, 255, 0.82);
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .user-layout__brand-collapsed {
-        font-size: 16px;
+        font-size: 19px;
         font-weight: 700;
         letter-spacing: 0.08em;
     }
@@ -185,7 +185,7 @@ body {
         border-radius: 8px;
         background: transparent;
         color: rgba(255, 255, 255, 0.72);
-        font-size: 15px;
+        font-size: 18px;
         font-weight: 500;
         text-align: left;
         cursor: pointer;
@@ -205,7 +205,7 @@ body {
 
     .user-layout__nav-icon {
         display: inline-flex;
-        font-size: 20px;
+        font-size: 23px;
     }
 
     .user-layout__nav-badge {
@@ -219,7 +219,7 @@ body {
         justify-content: center;
         background: #ff4d4f;
         color: #fff;
-        font-size: 12px;
+        font-size: 15px;
         line-height: 1;
     }
 
@@ -259,7 +259,7 @@ body {
     }
 
     .user-layout__header-title {
-        font-size: 22px;
+        font-size: 25px;
         font-weight: 700;
         color: rgba(0, 0, 0, 0.88);
         line-height: 1.25;
@@ -268,13 +268,13 @@ body {
 
     .user-layout__header-subtitle {
         margin-top: 6px;
-        font-size: 14px;
+        font-size: 17px;
         color: #666;
         line-height: 1.4;
     }
 
     .user-layout__content {
-        font-size: 16px;
+        font-size: 19px;
         flex: 1;
         min-height: 0;
         height: auto;
@@ -287,7 +287,7 @@ body {
     }
 
     .user-layout .ant-menu {
-        font-size: 16px;
+        font-size: 19px;
     }
 
     .user-layout .ant-menu-item {
@@ -297,7 +297,7 @@ body {
     }
 
     .user-layout .ant-btn {
-        font-size: 15px;
+        font-size: 18px;
         min-height: 36px;
     }
 
@@ -307,37 +307,37 @@ body {
     .user-layout .adm-search-bar,
     .user-layout .adm-input,
     .user-layout .adm-text-area {
-        font-size: 16px;
+        font-size: 19px;
     }
 
     .user-layout .adm-card-header-title {
-        font-size: 17px;
+        font-size: 20px;
         font-weight: 700;
     }
 
     .user-layout .adm-tag {
-        font-size: 14px;
+        font-size: 17px;
         line-height: 22px;
         padding: 0 8px;
     }
 
     .user-layout .adm-search-bar-input-box {
         min-height: 42px;
-        font-size: 16px;
+        font-size: 19px;
     }
 
     .user-layout [style*="font-size: 11px"],
     .user-layout [style*="font-size: 12px"] {
-        font-size: 15px !important;
+        font-size: 18px !important;
     }
 
     .user-layout [style*="font-size: 13px"],
     .user-layout [style*="font-size: 14px"] {
-        font-size: 16px !important;
+        font-size: 19px !important;
     }
 
     .user-layout [style*="font-size: 15px"] {
-        font-size: 17px !important;
+        font-size: 20px !important;
     }
 
     .mobile-layout__tabbar {
@@ -415,7 +415,7 @@ body {
 /* Admin compact density */
 @media (min-width: 900px) {
     .admin-layout {
-        font-size: 16px;
+        font-size: 19px;
     }
 
     .admin-layout .ant-card-body {
@@ -423,11 +423,11 @@ body {
     }
 
     .admin-layout .ant-table {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .admin-layout .ant-menu {
-        font-size: 16px;
+        font-size: 19px;
     }
 
     .admin-layout .ant-menu-item {
@@ -437,13 +437,13 @@ body {
     }
 
     .admin-layout .ant-card-head-title {
-        font-size: 17px;
+        font-size: 20px;
         font-weight: 700;
     }
 
     .admin-layout .ant-table-thead > tr > th,
     .admin-layout .ant-table-tbody > tr > td {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .admin-layout .ant-form-item-label > label,
@@ -452,35 +452,35 @@ body {
     .admin-layout .ant-select,
     .admin-layout .ant-picker,
     .admin-layout .ant-btn {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .admin-layout .ant-tag {
-        font-size: 14px;
+        font-size: 17px;
         line-height: 22px;
         padding: 0 8px;
     }
 
     .admin-layout .ant-statistic-title {
-        font-size: 15px;
+        font-size: 18px;
     }
 
     .admin-layout .ant-statistic-content {
-        font-size: 26px;
+        font-size: 29px;
     }
 
     .admin-layout [style*="font-size: 11px"],
     .admin-layout [style*="font-size: 12px"] {
-        font-size: 15px !important;
+        font-size: 18px !important;
     }
 
     .admin-layout [style*="font-size: 13px"],
     .admin-layout [style*="font-size: 14px"] {
-        font-size: 16px !important;
+        font-size: 19px !important;
     }
 
     .admin-layout [style*="font-size: 15px"] {
-        font-size: 17px !important;
+        font-size: 20px !important;
     }
 }
 

@@ -117,7 +117,7 @@ const History = ({ active = true } = {}) => {
 
     return (
         <div style={{ padding: 12 }}>
-            <div style={{ fontSize: 22, fontWeight: 'bold', marginBottom: 14 }}>我的预约记录</div>
+            <div style={{ fontSize: 25, fontWeight: 'bold', marginBottom: 14 }}>我的预约记录</div>
             <SearchBar
                 placeholder='搜索名称、设备或用途'
                 value={keyword}
@@ -128,30 +128,30 @@ const History = ({ active = true } = {}) => {
             {filteredList.map((item) => (
                 <Card key={item.id} style={{ marginBottom: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <span style={{ fontSize: 17, fontWeight: 'bold' }}>{item.venue?.name}</span>
+                        <span style={{ fontSize: 20, fontWeight: 'bold' }}>{item.venue?.name}</span>
                         {getStatusTag(item.status)}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         时间：{dayjs(item.start_time).format('MM-DD HH:mm')} - {dayjs(item.end_time).format('HH:mm')}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         申请时间：{item.create_time ? dayjs(item.create_time).format('MM-DD HH:mm') : '-'}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         审核时间：{item.review_time ? dayjs(item.review_time).format('MM-DD HH:mm') : '-'}
                     </div>
                     {item.review_remark ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             审核备注：{item.review_remark}
                         </div>
                     ) : null}
                     {item.cancel_reason ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             取消原因：{item.cancel_reason}
                         </div>
                     ) : null}
                     {item.checkin_time ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             签到时间：{dayjs(item.checkin_time).format('MM-DD HH:mm')}
                         </div>
                     ) : null}
@@ -195,39 +195,39 @@ const History = ({ active = true } = {}) => {
                 <div style={{ textAlign: 'center', color: '#999', marginTop: 24 }}>暂无预约记录</div>
             ) : null}
 
-            <div style={{ fontSize: 22, fontWeight: 'bold', margin: '24px 0 14px' }}>我的候补记录</div>
+            <div style={{ fontSize: 25, fontWeight: 'bold', margin: '24px 0 14px' }}>我的候补记录</div>
             {filteredQueueList.map((item) => (
                 <Card key={`queue-${item.id}`} style={{ marginBottom: 12 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
-                        <span style={{ fontSize: 17, fontWeight: 'bold' }}>{item.venue?.name}</span>
+                        <span style={{ fontSize: 20, fontWeight: 'bold' }}>{item.venue?.name}</span>
                         {getQueueStatusTag(item.queue_status ?? item.status)}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         候补时段：{dayjs(item.start_time).format('MM-DD HH:mm')} - {dayjs(item.end_time).format('HH:mm')}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         申请用途：{item.purpose || '-'}
                     </div>
-                    <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                         排队时间：{item.create_time ? dayjs(item.create_time).format('MM-DD HH:mm') : '-'}
                     </div>
                     {item.processed_time ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             处理时间：{dayjs(item.processed_time).format('MM-DD HH:mm')}
                         </div>
                     ) : null}
                     {item.process_remark ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             处理说明：{item.process_remark}
                         </div>
                     ) : null}
                     {item.cancel_reason ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             关闭原因：{item.cancel_reason}
                         </div>
                     ) : null}
                     {item.reservation ? (
-                        <div style={{ color: '#666', fontSize: 16, marginBottom: 6 }}>
+                        <div style={{ color: '#666', fontSize: 19, marginBottom: 6 }}>
                             晋级结果：已生成预约 #{item.reservation.id}，请在上方预约记录中查看最新状态
                         </div>
                     ) : null}
