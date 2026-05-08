@@ -611,6 +611,51 @@ body {
         font-size: 18px;
         min-height: 34px;
     }
+
+    .admin-review-page .ant-card-head-title,
+    .admin-evaluation-page .ant-card-head-title {
+        font-size: 24px;
+    }
+
+    .admin-review-page .ant-btn,
+    .admin-evaluation-page .ant-btn {
+        font-size: 19px;
+        min-height: 40px;
+    }
+
+    .admin-review-page .ant-tabs-tab,
+    .admin-review-page .ant-tabs-tab-btn {
+        font-size: 19px;
+    }
+
+    .admin-review-page .ant-table,
+    .admin-evaluation-page .ant-table {
+        font-size: 20px;
+    }
+
+    .admin-review-page .ant-table-thead > tr > th,
+    .admin-review-page .ant-table-tbody > tr > td,
+    .admin-evaluation-page .ant-table-thead > tr > th,
+    .admin-evaluation-page .ant-table-tbody > tr > td {
+        font-size: 20px;
+        padding: 20px 18px;
+    }
+
+    .admin-review-page .ant-tag {
+        font-size: 18px;
+        line-height: 30px;
+        padding: 0 10px;
+    }
+
+    .admin-evaluation-page .ant-rate {
+        font-size: 22px;
+    }
+
+    .admin-review-page .ant-table-cell .ant-btn,
+    .admin-evaluation-page .ant-table-cell .ant-btn {
+        font-size: 18px;
+        min-height: 34px;
+    }
 }
 
 @media (max-width: 768px) {

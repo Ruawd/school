@@ -148,6 +148,7 @@ const ReservationMgr = () => {
 
     return (
         <Card
+            className="admin-review-page"
             title="预约审核管理"
             extra={<Button onClick={() => setBatchVisible(true)}>批量预约</Button>}
             styles={{ body: { padding: isMobile ? '0 12px' : 24 } }}
@@ -170,6 +171,7 @@ const ReservationMgr = () => {
                     columns={columns}
                     dataSource={list}
                     loading={loading}
+                    scroll={{ x: 1280 }}
                     pagination={{ pageSize: 10 }}
                 />
             )}

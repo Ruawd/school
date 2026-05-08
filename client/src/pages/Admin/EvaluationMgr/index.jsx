@@ -84,7 +84,7 @@ const EvaluationMgr = () => {
     );
 
     return (
-        <Card title="评价管理" styles={{ body: { padding: isMobile ? '0 12px' : 24 } }}>
+        <Card className="admin-evaluation-page" title="评价管理" styles={{ body: { padding: isMobile ? '0 12px' : 24 } }}>
             {isMobile ? (
                 <div>
                     {list.map(item => <MobileCard key={item.id} record={item} />)}
@@ -96,6 +96,7 @@ const EvaluationMgr = () => {
                     columns={columns}
                     dataSource={list}
                     loading={loading}
+                    scroll={{ x: 1220 }}
                     pagination={{ pageSize: 10 }}
                 />
             )}
