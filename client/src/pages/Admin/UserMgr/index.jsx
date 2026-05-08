@@ -298,11 +298,11 @@ const UserMgr = () => {
   };
 
   const columns = [
-    { title: 'ID', dataIndex: 'id', width: 72 },
-    { title: '账号', dataIndex: 'username', width: 160 },
-    { title: '姓名', dataIndex: 'real_name', width: 120 },
-    { title: '角色', dataIndex: 'role', width: 110, render: renderRole },
-    { title: '信用分', dataIndex: 'credit_score', width: 100 },
+    { title: 'ID', dataIndex: 'id', width: 82 },
+    { title: '账号', dataIndex: 'username', width: 180 },
+    { title: '姓名', dataIndex: 'real_name', width: 140 },
+    { title: '角色', dataIndex: 'role', width: 120, render: renderRole },
+    { title: '信用分', dataIndex: 'credit_score', width: 110 },
     {
       title: '状态',
       dataIndex: 'status',
@@ -319,14 +319,14 @@ const UserMgr = () => {
     {
       title: '创建时间',
       dataIndex: 'create_time',
-      width: 170,
+      width: 190,
       render: (value) => value ? dayjs(value).format('YYYY-MM-DD HH:mm') : '-',
     },
     {
       title: '操作',
       key: 'action',
       fixed: 'right',
-      width: 300,
+      width: 360,
       render: (_, record) => renderUserActions(record),
     },
   ];
@@ -356,7 +356,7 @@ const UserMgr = () => {
 
   return (
     <>
-      <Card title='用户管理' extra={<Button type='primary' icon={<UserAddOutlined />} onClick={openCreateModal}>新增用户</Button>}>
+      <Card className='admin-user-page' title='用户管理' extra={<Button type='primary' icon={<UserAddOutlined />} onClick={openCreateModal}>新增用户</Button>}>
         <Row gutter={[12, 12]} style={{ marginBottom: 16 }}>
           <Col xs={24} md={8}>
             <Input
@@ -381,7 +381,7 @@ const UserMgr = () => {
         {isMobile ? (
           users.length ? users.map((user) => <MobileUserCard key={user.id} user={user} />) : <Empty description='暂无用户数据' />
         ) : (
-          <Table rowKey='id' loading={loading} dataSource={users} columns={columns} scroll={{ x: 1200 }} pagination={{ pageSize: 10, showSizeChanger: false }} />
+          <Table rowKey='id' loading={loading} dataSource={users} columns={columns} scroll={{ x: 1320 }} pagination={{ pageSize: 10, showSizeChanger: false }} />
         )}
       </Card>
 

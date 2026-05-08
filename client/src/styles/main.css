@@ -567,6 +567,50 @@ body {
     .admin-layout [style*="font-size: 15px"] {
         font-size: 20px !important;
     }
+
+    .admin-user-page .ant-card-head-title {
+        font-size: 24px;
+    }
+
+    .admin-user-page .ant-input,
+    .admin-user-page .ant-select,
+    .admin-user-page .ant-select-selection-item,
+    .admin-user-page .ant-select-selection-placeholder,
+    .admin-user-page .ant-btn {
+        font-size: 20px;
+    }
+
+    .admin-user-page .ant-input,
+    .admin-user-page .ant-select-selector,
+    .admin-user-page .ant-btn {
+        min-height: 44px;
+    }
+
+    .admin-user-page .ant-table {
+        font-size: 20px;
+    }
+
+    .admin-user-page .ant-table-thead > tr > th,
+    .admin-user-page .ant-table-tbody > tr > td {
+        font-size: 20px;
+        padding: 20px 18px;
+    }
+
+    .admin-user-page .ant-tag {
+        font-size: 18px;
+        line-height: 30px;
+        padding: 0 10px;
+    }
+
+    .admin-user-page .ant-switch {
+        transform: scale(1.12);
+        transform-origin: left center;
+    }
+
+    .admin-user-page .ant-table-cell .ant-btn {
+        font-size: 18px;
+        min-height: 34px;
+    }
 }
 
 @media (max-width: 768px) {
