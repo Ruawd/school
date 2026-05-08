@@ -147,7 +147,7 @@ body {
     }
 
     .user-layout__brand-title {
-        font-size: 24px;
+        font-size: 26px;
         font-weight: 700;
         color: #fff;
         line-height: 1.1;
@@ -156,7 +156,7 @@ body {
 
     .user-layout__brand-subtitle {
         color: rgba(255, 255, 255, 0.82);
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .user-layout__brand-collapsed {
@@ -259,7 +259,7 @@ body {
     }
 
     .user-layout__header-title {
-        font-size: 20px;
+        font-size: 22px;
         font-weight: 700;
         color: rgba(0, 0, 0, 0.88);
         line-height: 1.25;
@@ -268,12 +268,13 @@ body {
 
     .user-layout__header-subtitle {
         margin-top: 6px;
-        font-size: 12px;
+        font-size: 14px;
         color: #666;
         line-height: 1.4;
     }
 
     .user-layout__content {
+        font-size: 16px;
         flex: 1;
         min-height: 0;
         height: auto;
@@ -283,6 +284,46 @@ body {
         background: #fff;
         box-shadow: none;
         overflow-y: auto;
+    }
+
+    .user-layout .ant-menu {
+        font-size: 16px;
+    }
+
+    .user-layout .ant-menu-item {
+        height: 48px;
+        line-height: 48px;
+        margin-block: 6px;
+    }
+
+    .user-layout .ant-btn {
+        font-size: 15px;
+        min-height: 36px;
+    }
+
+    .user-layout .adm-card,
+    .user-layout .adm-list,
+    .user-layout .adm-form,
+    .user-layout .adm-search-bar,
+    .user-layout .adm-input,
+    .user-layout .adm-text-area {
+        font-size: 16px;
+    }
+
+    .user-layout .adm-card-header-title {
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .user-layout .adm-tag {
+        font-size: 14px;
+        line-height: 22px;
+        padding: 0 8px;
+    }
+
+    .user-layout .adm-search-bar-input-box {
+        min-height: 42px;
+        font-size: 16px;
     }
 
     .mobile-layout__tabbar {
