@@ -116,17 +116,19 @@ const History = ({ active = true } = {}) => {
     });
 
     return (
-        <div style={{ padding: 12 }}>
-            <div style={{ fontSize: 25, fontWeight: 'bold', marginBottom: 14 }}>我的预约记录</div>
+        <div className='mobile-history-page'>
+            <div className='mobile-history-page__section-title' style={{ fontSize: 25, fontWeight: 'bold', marginBottom: 14 }}>我的预约记录</div>
             <SearchBar
+                className='mobile-history-page__search'
                 placeholder='搜索名称、设备或用途'
                 value={keyword}
                 onChange={(val) => setKeyword(val)}
                 style={{ marginBottom: 12 }}
             />
 
+            <div className='mobile-history-page__grid'>
             {filteredList.map((item) => (
-                <Card key={item.id} style={{ marginBottom: 12 }}>
+                <Card key={item.id} className='mobile-history-page__card'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                         <span style={{ fontSize: 20, fontWeight: 'bold' }}>{item.venue?.name}</span>
                         {getStatusTag(item.status)}
@@ -190,14 +192,16 @@ const History = ({ active = true } = {}) => {
                     ) : null}
                 </Card>
             ))}
+            </div>
 
             {filteredList.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#999', marginTop: 24 }}>暂无预约记录</div>
             ) : null}
 
-            <div style={{ fontSize: 25, fontWeight: 'bold', margin: '24px 0 14px' }}>我的候补记录</div>
+            <div className='mobile-history-page__section-title' style={{ fontSize: 25, fontWeight: 'bold', margin: '24px 0 14px' }}>我的候补记录</div>
+            <div className='mobile-history-page__grid'>
             {filteredQueueList.map((item) => (
-                <Card key={`queue-${item.id}`} style={{ marginBottom: 12 }}>
+                <Card key={`queue-${item.id}`} className='mobile-history-page__card'>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                         <span style={{ fontSize: 20, fontWeight: 'bold' }}>{item.venue?.name}</span>
                         {getQueueStatusTag(item.queue_status ?? item.status)}
@@ -241,6 +245,7 @@ const History = ({ active = true } = {}) => {
                     </div>
                 </Card>
             ))}
+            </div>
 
             {filteredQueueList.length === 0 ? (
                 <div style={{ textAlign: 'center', color: '#999', marginTop: 24 }}>暂无候补记录</div>

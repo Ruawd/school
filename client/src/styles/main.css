@@ -105,6 +105,16 @@ body {
     flex: 0 0 auto;
 }
 
+.mobile-history-page {
+    padding: 12px;
+}
+
+.mobile-history-page__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
 @media (min-width: 900px) {
     body {
         background: #f0f2f5;
@@ -404,10 +414,85 @@ body {
     .mobile-map-page__header {
         padding: 16px 20px 12px;
     }
+
+    .mobile-history-page {
+        padding: 4px 8px 14px;
+    }
+
+    .mobile-history-page__section-title {
+        margin-bottom: 18px !important;
+        color: #0f172a;
+        font-size: 34px !important;
+        line-height: 1.15;
+    }
+
+    .mobile-history-page__search {
+        margin-bottom: 18px !important;
+    }
+
+    .mobile-history-page__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+        gap: 16px;
+        align-items: stretch;
+    }
+
+    .mobile-history-page__card {
+        height: 100%;
+        margin-bottom: 0 !important;
+        border: 1px solid #edf0f5;
+        border-radius: 16px;
+        background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
+        box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+    }
+
+    .mobile-history-page__card .adm-card-body {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        padding: 18px 20px !important;
+    }
+
+    .mobile-history-page__card [style*="font-size: 20px"] {
+        font-size: 25px !important;
+        line-height: 1.35;
+    }
+
+    .mobile-history-page__card [style*="font-size: 19px"] {
+        font-size: 22px !important;
+        line-height: 1.55;
+    }
+
+    .mobile-history-page__card [style*="margin-bottom: 6px"] {
+        margin-bottom: 4px !important;
+    }
+
+    .mobile-history-page__card [style*="border-top"] {
+        margin-top: auto !important;
+        padding-top: 12px !important;
+    }
+
+    .mobile-history-page__card .adm-tag {
+        font-size: 18px !important;
+        line-height: 28px;
+        padding: 0 10px;
+        border-radius: 6px;
+    }
+
+    .mobile-history-page__card .adm-button {
+        min-height: 38px;
+        padding: 0 14px;
+        font-size: 18px !important;
+        border-radius: 8px;
+    }
 }
 
 @media (min-width: 1280px) {
     .mobile-home-page__list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .mobile-history-page__grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
