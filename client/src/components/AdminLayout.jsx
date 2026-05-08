@@ -171,11 +171,11 @@ const AdminLayout = () => {
         }}
       >
         {collapsed ? (
-          <div style={{ fontSize: 16, fontWeight: 700, letterSpacing: '0.08em' }}>管</div>
+          <div style={{ fontSize: 18, fontWeight: 700, letterSpacing: '0.08em' }}>管</div>
         ) : (
           <div style={{ overflow: 'hidden' }}>
-            <div style={{ fontSize: 24, fontWeight: 700, lineHeight: 1.1, marginBottom: 6 }}>系统管理员</div>
-            <div style={{ fontSize: 13, opacity: 0.82 }}>{getRoleLabel(currentUser.role)}</div>
+            <div style={{ fontSize: 26, fontWeight: 700, lineHeight: 1.1, marginBottom: 6 }}>系统管理员</div>
+            <div style={{ fontSize: 15, opacity: 0.82 }}>{getRoleLabel(currentUser.role)}</div>
           </div>
         )}
       </div>
@@ -191,7 +191,7 @@ const AdminLayout = () => {
   );
 
   return (
-    <Layout style={{ height: '100vh', minHeight: '100vh', overflow: 'hidden' }} hasSider={!isMobile}>
+    <Layout className='admin-layout' style={{ height: '100vh', minHeight: '100vh', overflow: 'hidden' }} hasSider={!isMobile}>
       {!isMobile && (
         <Sider
           collapsible
@@ -230,9 +230,9 @@ const AdminLayout = () => {
               <Button type='text' icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />} onClick={() => setCollapsed((prev) => !prev)} />
             )}
             <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', minWidth: 0 }}>
-              <div style={{ fontSize: isMobile ? 16 : 20, fontWeight: 700, lineHeight: 1.25, margin: 0 }}>{currentLabel}</div>
+              <div style={{ fontSize: isMobile ? 16 : 22, fontWeight: 700, lineHeight: 1.25, margin: 0 }}>{currentLabel}</div>
               {!isMobile && (
-                <div style={{ fontSize: 12, color: '#666', lineHeight: 1.4, marginTop: 6 }}>
+                <div style={{ fontSize: 14, color: '#666', lineHeight: 1.4, marginTop: 6 }}>
                   {currentUser.real_name} · {getRoleLabel(currentUser.role)}
                 </div>
               )}

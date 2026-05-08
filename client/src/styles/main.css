@@ -326,6 +326,20 @@ body {
         font-size: 16px;
     }
 
+    .user-layout [style*="font-size: 11px"],
+    .user-layout [style*="font-size: 12px"] {
+        font-size: 15px !important;
+    }
+
+    .user-layout [style*="font-size: 13px"],
+    .user-layout [style*="font-size: 14px"] {
+        font-size: 16px !important;
+    }
+
+    .user-layout [style*="font-size: 15px"] {
+        font-size: 17px !important;
+    }
+
     .mobile-layout__tabbar {
         display: none !important;
     }
@@ -399,16 +413,75 @@ body {
 }
 
 /* Admin compact density */
-.admin-layout {
-    font-size: 14px;
-}
+@media (min-width: 900px) {
+    .admin-layout {
+        font-size: 16px;
+    }
 
-.admin-layout .ant-card-body {
-    padding: 16px;
-}
+    .admin-layout .ant-card-body {
+        padding: 18px;
+    }
 
-.admin-layout .ant-table {
-    font-size: 13px;
+    .admin-layout .ant-table {
+        font-size: 15px;
+    }
+
+    .admin-layout .ant-menu {
+        font-size: 16px;
+    }
+
+    .admin-layout .ant-menu-item {
+        height: 48px;
+        line-height: 48px;
+        margin-block: 6px;
+    }
+
+    .admin-layout .ant-card-head-title {
+        font-size: 17px;
+        font-weight: 700;
+    }
+
+    .admin-layout .ant-table-thead > tr > th,
+    .admin-layout .ant-table-tbody > tr > td {
+        font-size: 15px;
+    }
+
+    .admin-layout .ant-form-item-label > label,
+    .admin-layout .ant-input,
+    .admin-layout .ant-input-number,
+    .admin-layout .ant-select,
+    .admin-layout .ant-picker,
+    .admin-layout .ant-btn {
+        font-size: 15px;
+    }
+
+    .admin-layout .ant-tag {
+        font-size: 14px;
+        line-height: 22px;
+        padding: 0 8px;
+    }
+
+    .admin-layout .ant-statistic-title {
+        font-size: 15px;
+    }
+
+    .admin-layout .ant-statistic-content {
+        font-size: 26px;
+    }
+
+    .admin-layout [style*="font-size: 11px"],
+    .admin-layout [style*="font-size: 12px"] {
+        font-size: 15px !important;
+    }
+
+    .admin-layout [style*="font-size: 13px"],
+    .admin-layout [style*="font-size: 14px"] {
+        font-size: 16px !important;
+    }
+
+    .admin-layout [style*="font-size: 15px"] {
+        font-size: 17px !important;
+    }
 }
 
 @media (max-width: 768px) {
